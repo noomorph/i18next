@@ -5,6 +5,9 @@ function capitalize(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+const SCRIPT_SUBTAG = /^[A-Za-z]{4}$/;
+const EXTENDED_LANGUAGE_SUBTAG = /^[A-Za-z]{3}$/;
+
 class LanguageUtil {
   constructor(options) {
     this.options = options;
@@ -17,11 +20,20 @@ class LanguageUtil {
     code = getCleanedCode(code);
     if (!code || code.indexOf('-') < 0) return null;
 
-    const p = code.split('-');
-    if (p.length === 2) return null;
-    p.pop();
-    if (p[p.length - 1].toLowerCase() === 'x') return null;
-    return this.formatLanguageCode(p.join('-'));
+    const [primary, tag1, tag2] = code.split('-', 3);
+    const extended = tag1 && EXTENDED_LANGUAGE_SUBTAG.test(tag1) ? tag1 : null;
+    const maybeScript = extended ? tag2 : tag1;
+    const script = maybeScript && SCRIPT_SUBTAG.test(maybeScript) ? maybeScript : null;
+
+    if (script) {
+      const rawLanguageCode = extended
+        ? `${primary}-${extended}-${script}`
+        : `${primary}-${script}`;
+
+      return this.formatLanguageCode(rawLanguageCode);
+    }
+
+    return null;
   }
 
   getLanguagePartFromCode(code) {

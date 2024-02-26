@@ -380,4 +380,29 @@ describe('LanguageUtils', () => {
       });
     });
   });
+
+  describe('getScriptPartFromCode()', () => {
+    /** @type {LanguageUtils} */
+    let cu;
+    beforeAll(() => {
+      cu = new LanguageUtils({ fallbackLng: ['en'] });
+    });
+
+    const tests = [
+      { args: ['de'], expected: null },
+      { args: ['de-CH'], expected: null },
+      { args: ['sr'], expected: null },
+      { args: ['sr-Cyrl'], expected: 'sr-Cyrl' },
+      { args: ['zh-Hant-MO'], expected: 'zh-Hant' },
+      { args: ['zh-yue-HANT-hk'], expected: 'zh-yue-Hant' },
+      { args: ['de-DE-x-custom1'], expected: null },
+      { args: ['art-Latn-x-interslv'], expected: 'art-Latn' },
+    ];
+
+    tests.forEach((test) => {
+      it(`correctly get script part for ${JSON.stringify(test.args)} args`, () => {
+        expect(cu.getScriptPartFromCode.apply(cu, test.args)).to.eql(test.expected);
+      });
+    });
+  });
 });

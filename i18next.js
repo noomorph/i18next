@@ -893,11 +893,11 @@
     getScriptPartFromCode(code) {
       code = getCleanedCode(code);
       if (!code || code.indexOf('-') < 0) return null;
-      const p = code.split('-');
-      if (p.length === 2) return null;
-      p.pop();
-      if (p[p.length - 1].toLowerCase() === 'x') return null;
-      return this.formatLanguageCode(p.join('-'));
+      const [lang, maybeScript] = code.split('-');
+      if (maybeScript && maybeScript.length === 4 && maybeScript[0] >= 'A' && maybeScript[0] <= 'Z') {
+        return this.formatLanguageCode(`${lang}-${maybeScript}`);
+      }
+      return null;
     }
     getLanguagePartFromCode(code) {
       code = getCleanedCode(code);
